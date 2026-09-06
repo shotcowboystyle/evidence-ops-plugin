@@ -1,0 +1,211 @@
+{
+  "plugin": {
+    "name": "evidence-ops",
+    "displayName": "Evidence Ops",
+    "description": "Chain-of-custody evidence handling — hash, timestamp, inspect metadata, append to an immutable custody register, package as BagIt, verify, and sync to WORM or S3 Object Lock storage.",
+    "version": "0.1.0",
+    "author": {
+      "name": "Curtis Blanton",
+      "email": "public@shotcowboystyle.com",
+      "url": "https://shotcowboystyle.com"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/shotcowboystyle/evidence-ops-plugin",
+    "category": "Legal & Evidence",
+    "tags": ["evidence", "forensics", "chain-of-custody", "integrity"],
+    "keywords": [
+      "evidence",
+      "chain-of-custody",
+      "forensics",
+      "hashing",
+      "opentimestamps",
+      "bagit",
+      "exiftool",
+      "object-lock"
+    ]
+  },
+  "skills": [
+    {
+      "name": "environment-check",
+      "summary": "Use when the user wants to know which evidence-handling tools are present on this host before running a pipeline — probes hashing, metadata, timestamping, packaging, and storage CLIs and reports what is missing with an install hint for each",
+      "triggers": ["check evidence tools", "what forensics tools are installed", "why did hashing fail"],
+      "requires": ["command"],
+      "tools": ["Bash(command *)", "Bash(sw_vers *)", "Bash(uname *)", "Read"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "check",
+        "description": "Probe this host for evidence-handling CLIs and report what is present, missing, and how to install it.",
+        "body": "No arguments. Report a table of tool, status, and install hint, then name the pipeline stages that are currently blocked."
+      }
+    },
+    {
+      "name": "install-deps",
+      "summary": "Use after environment-check reports missing tools — installs them, putting Python-based tools in a plugin-owned virtual environment instead of mutating the system Python",
+      "triggers": ["install evidence tools", "set up exiftool and ots", "fix missing forensics dependencies"],
+      "requires": ["uv", "brew"],
+      "tools": ["Bash(command *)", "Bash(brew *)", "Bash(uv *)", "Bash(mkdir *)", "Bash(test *)", "Bash(apt-get *)", "Bash(npm *)", "Read", "Write"],
+      "disableModelInvocation": true
+    },
+    {
+      "name": "init-evidence-store",
+      "summary": "Use when starting a new evidence collection or adding custody handling to an existing workspace — creates the evidence directory tree, an empty append-only register, and a written record of the hashing policy in force",
+      "triggers": ["start an evidence store", "set up chain of custody here", "create the evidence register"],
+      "requires": [],
+      "tools": ["Bash(mkdir *)", "Bash(test *)", "Bash(touch *)", "Bash(find *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "init",
+        "description": "Create the evidence directory tree and an empty append-only custody register in the current workspace.",
+        "argumentHint": "[target-dir]",
+        "body": "The optional target directory arrives in $ARGUMENTS and defaults to the current working directory. Refuse to overwrite an existing register."
+      }
+    },
+    {
+      "name": "capture-web",
+      "summary": "Use when a web page needs to be preserved as evidence — archives it as a single self-contained file, records the capture context that the page itself cannot prove, hashes the result, and offers to register it",
+      "triggers": ["archive this URL", "capture a webpage as evidence", "save this page before it changes"],
+      "requires": ["single-file", "shasum"],
+      "tools": ["Bash(single-file *)", "Bash(shasum *)", "Bash(sha256sum *)", "Bash(command *)", "Bash(mkdir *)", "Bash(date *)", "Bash(curl *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "capture",
+        "description": "Archive a URL as a self-contained file, hash it, and record the capture context.",
+        "argumentHint": "<url> [--no-log]",
+        "body": "The URL and any flags arrive in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "hash-evidence",
+      "summary": "Use when a file or directory needs cryptographic hashes — computes SHA-256 by default and optionally BLAKE3, emitting a checkable manifest for directories",
+      "triggers": ["hash this file", "sha256 a folder", "make a checksum manifest"],
+      "requires": ["shasum", "b3sum"],
+      "tools": ["Bash(shasum *)", "Bash(sha256sum *)", "Bash(b3sum *)", "Bash(command *)", "Bash(find *)", "Bash(wc *)", "Bash(du *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "hash",
+        "description": "Compute SHA-256 (and optionally BLAKE3) for a file or directory and write a checkable manifest.",
+        "argumentHint": "<path> [--blake3] [--out <manifest>]",
+        "body": "The path and any flags arrive in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "inspect-metadata",
+      "summary": "Use when the embedded metadata of a file matters — extracts EXIF, IPTC, XMP, and container metadata to JSON, then flags anomalies such as timestamp disagreement or editing-software markers as signals worth investigating",
+      "triggers": ["read the EXIF on this", "does this photo have GPS", "check this video for editing traces"],
+      "requires": ["exiftool", "mediainfo"],
+      "tools": ["Bash(exiftool *)", "Bash(mediainfo *)", "Bash(command *)", "Bash(file *)", "Bash(stat *)", "Bash(mkdir *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "metadata",
+        "description": "Extract EXIF, IPTC, XMP, and container metadata to JSON and flag anomalies worth investigating.",
+        "argumentHint": "<path> [--out <json>]",
+        "body": "The path and any flags arrive in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "log-custody",
+      "summary": "Use when an item must enter the custody record — hashes it, captures who handed it over and how, copies the original into immutable storage under its own name, and appends one record to the append-only register",
+      "triggers": ["log this evidence", "add to the custody register", "record chain of custody for this file"],
+      "requires": ["shasum", "file"],
+      "tools": ["Bash(shasum *)", "Bash(sha256sum *)", "Bash(b3sum *)", "Bash(command *)", "Bash(file *)", "Bash(stat *)", "Bash(exiftool *)", "Bash(cp *)", "Bash(mkdir *)", "Bash(date *)", "Bash(grep *)", "Bash(wc *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "log",
+        "description": "Hash an item, capture its custody metadata, and append one record to the append-only evidence register.",
+        "argumentHint": "<path> [--source <text>] [--handler <name>]",
+        "body": "The path and any custody details arrive in $ARGUMENTS. Ask for anything still missing before writing."
+      }
+    },
+    {
+      "name": "timestamp-evidence",
+      "summary": "Use when a file's existence at a point in time needs to be provable independently of the filesystem — anchors its hash with OpenTimestamps and stores the proof alongside the custody record",
+      "triggers": ["timestamp this evidence", "prove this existed today", "opentimestamps this file"],
+      "requires": ["ots"],
+      "tools": ["Bash(ots *)", "Bash(command *)", "Bash(shasum *)", "Bash(cp *)", "Bash(mkdir *)", "Bash(date *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "timestamp",
+        "description": "Anchor a file's hash with OpenTimestamps, or upgrade and verify an existing proof.",
+        "argumentHint": "<path> [--verify] [--upgrade]",
+        "body": "The path and any flags arrive in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "bag-evidence",
+      "summary": "Use when a set of items must be handed over or archived as one unit — packages a directory as a BagIt bag with per-file checksums and a manifest that any receiving party can validate without this plugin",
+      "triggers": ["bag this evidence", "package for handover", "make a BagIt archive"],
+      "requires": ["bagit.py"],
+      "tools": ["Bash(bagit.py *)", "Bash(python3 *)", "Bash(command *)", "Bash(mkdir *)", "Bash(cp *)", "Bash(du *)", "Bash(find *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "bag",
+        "description": "Package a directory as a BagIt bag with per-file checksums and a validatable manifest.",
+        "argumentHint": "<dir> [--out <bag-dir>]",
+        "body": "The source directory and any flags arrive in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "verify-bundle",
+      "summary": "Use when integrity must be confirmed rather than assumed — recomputes every hash, validates bags and timestamp proofs, and reports an explicit pass or fail naming each diverging file",
+      "triggers": ["verify this evidence", "has anything changed", "check the bag is still valid"],
+      "requires": ["shasum", "bagit.py", "ots"],
+      "tools": ["Bash(shasum *)", "Bash(sha256sum *)", "Bash(b3sum *)", "Bash(bagit.py *)", "Bash(ots *)", "Bash(command *)", "Bash(find *)", "Bash(mkdir *)", "Bash(date *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "verify",
+        "description": "Recompute hashes, validate bags and timestamp proofs, and report an explicit pass or fail.",
+        "argumentHint": "[path]",
+        "body": "The path arrives in $ARGUMENTS and defaults to the current working directory."
+      }
+    },
+    {
+      "name": "setup-storage",
+      "summary": "Use when configuring where evidence is replicated — walks through defining a storage remote, confirms its retention or write-once behaviour, and records the destination policy without ever touching credentials",
+      "triggers": ["set up evidence storage", "configure the rclone remote", "where should evidence be backed up"],
+      "requires": ["rclone"],
+      "tools": ["Bash(rclone *)", "Bash(aws *)", "Bash(command *)", "Bash(mkdir *)", "Read", "Write"],
+      "disableModelInvocation": false
+    },
+    {
+      "name": "sync-immutable",
+      "summary": "Use when verified evidence should be replicated to storage that cannot silently rewrite it — copies to the configured remote, confirms retention settings before writing, and re-verifies what landed",
+      "triggers": ["push evidence to immutable storage", "sync to object lock", "back up the evidence bundle"],
+      "requires": ["rclone"],
+      "tools": ["Bash(rclone *)", "Bash(aws *)", "Bash(command *)", "Bash(shasum *)", "Bash(date *)", "Bash(mkdir *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "sync",
+        "description": "Replicate verified evidence to immutable storage and re-verify what landed.",
+        "argumentHint": "<path> [--remote <name>] [--dry-run]",
+        "body": "The path and any flags arrive in $ARGUMENTS. Always dry-run first unless told otherwise."
+      }
+    },
+    {
+      "name": "reference-lookup",
+      "summary": "Use when deciding how to handle a media type, storage mode, or integrity question — searches this plugin's own reference corpus and returns the most relevant passages with their file paths",
+      "triggers": ["how do I redact video", "what is object lock compliance mode", "which hash tool on macOS"],
+      "requires": [],
+      "tools": ["Bash(grep *)", "Bash(rg *)", "Bash(command *)", "Bash(find *)", "Bash(sed *)", "Bash(wc *)", "Read"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "lookup",
+        "description": "Search this plugin's reference corpus and return the most relevant passages with their paths.",
+        "argumentHint": "<query>",
+        "body": "The query arrives in $ARGUMENTS."
+      }
+    },
+    {
+      "name": "onboard",
+      "summary": "Use on first run or on a new machine — checks the environment, offers to install what is missing, configures a storage destination, and ends by showing the shortest working pipeline for this host",
+      "triggers": ["set up evidence-ops", "first run", "get me started with evidence handling"],
+      "requires": [],
+      "tools": ["Bash(command *)", "Bash(mkdir *)", "Bash(test *)", "Read", "Write"],
+      "disableModelInvocation": false,
+      "command": {
+        "name": "onboard",
+        "description": "First-run setup — environment check, dependency install, and storage configuration.",
+        "body": "No arguments. Run the stages in order and stop at the first one the user declines."
+      }
+    }
+  ]
+}

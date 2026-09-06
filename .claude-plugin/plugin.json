@@ -1,0 +1,52 @@
+{
+  "name": "evidence-ops",
+  "description": "Chain-of-custody evidence handling — hash, timestamp, inspect metadata, append to an immutable custody register, package as BagIt, verify, and sync to WORM or S3 Object Lock storage.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Curtis Blanton",
+    "email": "public@shotcowboystyle.com",
+    "url": "https://shotcowboystyle.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/shotcowboystyle/evidence-ops-plugin",
+  "commands": [
+    "./commands/check.md",
+    "./commands/init.md",
+    "./commands/capture.md",
+    "./commands/hash.md",
+    "./commands/metadata.md",
+    "./commands/log.md",
+    "./commands/timestamp.md",
+    "./commands/bag.md",
+    "./commands/verify.md",
+    "./commands/sync.md",
+    "./commands/lookup.md",
+    "./commands/onboard.md"
+  ],
+  "skills": [
+    "./skills/environment-check/",
+    "./skills/install-deps/",
+    "./skills/init-evidence-store/",
+    "./skills/capture-web/",
+    "./skills/hash-evidence/",
+    "./skills/inspect-metadata/",
+    "./skills/log-custody/",
+    "./skills/timestamp-evidence/",
+    "./skills/bag-evidence/",
+    "./skills/verify-bundle/",
+    "./skills/setup-storage/",
+    "./skills/sync-immutable/",
+    "./skills/reference-lookup/",
+    "./skills/onboard/"
+  ],
+  "keywords": [
+    "evidence",
+    "chain-of-custody",
+    "forensics",
+    "hashing",
+    "opentimestamps",
+    "bagit",
+    "exiftool",
+    "object-lock"
+  ]
+}

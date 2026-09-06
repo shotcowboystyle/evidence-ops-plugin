@@ -1,0 +1,11 @@
+{
+  "$comment": "Portable MCP declarations. Any MCP-capable runtime can consume these. Credentials are read from the environment and never stored here.",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${EVIDENCE_ROOT}"],
+      "env": {},
+      "$comment": "Set EVIDENCE_ROOT to the workspace containing evidence/. Optional — the skills work through ordinary shell access when no MCP server is configured."
+    }
+  }
+}
