@@ -45,18 +45,18 @@ Then run `/evidence-ops:onboard`.
 
 ## Commands
 
-- `/evidence-ops:check` — Probe this host for evidence-handling CLIs and report what is present, missing, and how to install it.
-- `/evidence-ops:init [target-dir]` — Create the evidence directory tree and an empty append-only custody register in the current workspace.
-- `/evidence-ops:capture <url> [--no-log]` — Archive a URL as a self-contained file, hash it, and record the capture context.
-- `/evidence-ops:hash <path> [--blake3] [--out <manifest>]` — Compute SHA-256 (and optionally BLAKE3) for a file or directory and write a checkable manifest.
-- `/evidence-ops:metadata <path> [--out <json>]` — Extract EXIF, IPTC, XMP, and container metadata to JSON and flag anomalies worth investigating.
-- `/evidence-ops:log <path> [--source <text>] [--handler <name>]` — Hash an item, capture its custody metadata, and append one record to the append-only evidence register.
-- `/evidence-ops:timestamp <path> [--verify] [--upgrade]` — Anchor a file's hash with OpenTimestamps, or upgrade and verify an existing proof.
 - `/evidence-ops:bag <dir> [--out <bag-dir>]` — Package a directory as a BagIt bag with per-file checksums and a validatable manifest.
-- `/evidence-ops:verify [path]` — Recompute hashes, validate bags and timestamp proofs, and report an explicit pass or fail.
-- `/evidence-ops:sync <path> [--remote <name>] [--dry-run]` — Replicate verified evidence to immutable storage and re-verify what landed.
+- `/evidence-ops:capture <url> [--no-log]` — Archive a URL as a self-contained file, hash it, and record the capture context.
+- `/evidence-ops:check` — Probe this host for evidence-handling CLIs and report what is present, missing, and how to install it.
+- `/evidence-ops:hash <path> [--blake3] [--out <manifest>]` — Compute SHA-256 (and optionally BLAKE3) for a file or directory and write a checkable manifest.
+- `/evidence-ops:init [target-dir]` — Create the evidence directory tree and an empty append-only custody register in the current workspace.
+- `/evidence-ops:log <path> [--source <text>] [--handler <name>]` — Hash an item, capture its custody metadata, and append one record to the append-only evidence register.
 - `/evidence-ops:lookup <query>` — Search this plugin's reference corpus and return the most relevant passages with their paths.
+- `/evidence-ops:metadata <path> [--out <json>]` — Extract EXIF, IPTC, XMP, and container metadata to JSON and flag anomalies worth investigating.
 - `/evidence-ops:onboard` — First-run setup — environment check, dependency install, and storage configuration.
+- `/evidence-ops:sync <path> [--remote <name>] [--dry-run]` — Replicate verified evidence to immutable storage and re-verify what landed.
+- `/evidence-ops:timestamp <path> [--verify] [--upgrade]` — Anchor a file's hash with OpenTimestamps, or upgrade and verify an existing proof.
+- `/evidence-ops:verify [path]` — Recompute hashes, validate bags and timestamp proofs, and report an explicit pass or fail.
 
 ## Skills
 

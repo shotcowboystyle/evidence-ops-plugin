@@ -1,6 +1,6 @@
 ---
 description: Recompute hashes, validate bags and timestamp proofs, and report an explicit pass or fail.
-argument-hint: [path]
+argument-hint: "[path]"
 ---
 
 Invoke the `verify-bundle` skill.

@@ -1,6 +1,6 @@
 ---
 description: Create the evidence directory tree and an empty append-only custody register in the current workspace.
-argument-hint: [target-dir]
+argument-hint: "[target-dir]"
 ---
 
 Invoke the `init-evidence-store` skill.

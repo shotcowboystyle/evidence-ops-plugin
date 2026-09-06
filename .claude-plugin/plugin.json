@@ -10,18 +10,18 @@
   "license": "MIT",
   "repository": "https://github.com/shotcowboystyle/evidence-ops-plugin",
   "commands": [
-    "./commands/check.md",
-    "./commands/init.md",
-    "./commands/capture.md",
-    "./commands/hash.md",
-    "./commands/metadata.md",
-    "./commands/log.md",
-    "./commands/timestamp.md",
     "./commands/bag.md",
-    "./commands/verify.md",
-    "./commands/sync.md",
+    "./commands/capture.md",
+    "./commands/check.md",
+    "./commands/hash.md",
+    "./commands/init.md",
+    "./commands/log.md",
     "./commands/lookup.md",
-    "./commands/onboard.md"
+    "./commands/metadata.md",
+    "./commands/onboard.md",
+    "./commands/sync.md",
+    "./commands/timestamp.md",
+    "./commands/verify.md"
   ],
   "skills": [
     "./skills/environment-check/",
